@@ -8,6 +8,10 @@ const SHIPPING_COST = 200;
 let products = [];
 let categories = [];
 let orders = [];
+let settings = {
+    jazzCashNumber: '0300-1234567',
+    easyPaisaNumber: '0345-1234567'
+};
 
 // Local containers
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -23,6 +27,7 @@ async function fetchData() {
         products = data.products || [];
         categories = data.categories || [];
         orders = data.orders || [];
+        if (data.settings) settings = data.settings;
         
         if (categories.length === 0) {
             categories = ['Produce', 'Dairy & Eggs', 'Bakery', 'Pantry', 'Beverages', 'Snacks', 'Local Specialties'];
@@ -192,7 +197,7 @@ function renderFooter() {
                     <div>
                         <h4 class="font-bold text-gray-800 mb-4">Contact</h4>
                         <ul class="space-y-2 text-sm text-gray-500">
-                            <li><i class="fa-solid fa-phone mr-2 text-emerald-600"></i> 0300-1234567</li>
+                            <li><i class="fa-solid fa-phone mr-2 text-emerald-600"></i> <span id="footer-contact-num">0300-1234567</span></li>
                             <li><i class="fa-solid fa-envelope mr-2 text-emerald-600"></i> info@studentsupermart.com</li>
                         </ul>
                     </div>
@@ -438,6 +443,13 @@ function initCheckout() {
         return;
     }
 
+    // Populate dynamic numbers
+    const jcDisplay = document.getElementById('jc-number-display');
+    const epDisplay = document.getElementById('ep-number-display');
+    if(jcDisplay) jcDisplay.textContent = settings.jazzCashNumber;
+    if(epDisplay) epDisplay.textContent = settings.easyPaisaNumber;
+
+
     let subtotal = 0;
     summary.innerHTML = cart.map(item => {
         subtotal += item.price * item.qty;
@@ -526,6 +538,7 @@ function initAdmin() {
                 <button onclick="renderAdminSection('orders')" id="nav-orders" class="w-full text-left px-4 py-2 rounded-lg text-emerald-600 bg-emerald-50 font-medium">Orders</button>
                 <button onclick="renderAdminSection('products')" id="nav-products" class="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50">Products</button>
                 <button onclick="renderAdminSection('categories')" id="nav-categories" class="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50">Categories</button>
+                <button onclick="renderAdminSection('settings')" id="nav-settings" class="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50">Settings</button>
                 <button onclick="adminLogout()" class="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 mt-8">Logout</button>
             </nav>
         </aside>
@@ -613,6 +626,38 @@ function renderAdminSection(section) {
                 `).join('')}
             </ul>
         `;
+    } else if (section === 'settings') {
+        content.innerHTML = `
+            <h3 class="text-2xl font-bold mb-6">Settings</h3>
+            <form id="settings-form" class="space-y-6 max-w-md">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">JazzCash Number</label>
+                    <input id="set-jc" value="${settings.jazzCashNumber || ''}" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="03XX-XXXXXXX">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">EasyPaisa Number</label>
+                    <input id="set-ep" value="${settings.easyPaisaNumber || ''}" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="03XX-XXXXXXX">
+                </div>
+                <button type="submit" id="btn-save-settings" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 transition-colors">Save Settings</button>
+            </form>
+        `;
+        
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-settings');
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            settings.jazzCashNumber = document.getElementById('set-jc').value;
+            settings.easyPaisaNumber = document.getElementById('set-ep').value;
+
+            const success = await syncData('settings', settings);
+            if (success) {
+                alert('Settings Saved Successfully!');
+            }
+            btn.textContent = 'Save Settings';
+            btn.disabled = false;
+        });
     }
 }
 

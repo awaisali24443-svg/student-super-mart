@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname)));
 app.get('/api/data', (req, res) => {
     if (!fs.existsSync(DB_FILE)) {
         // Fallback if DB doesn't exist yet
-        return res.json({ products: [], categories: [], orders: [] });
+        return res.json({ products: [], categories: [], orders: [], settings: {} });
     }
     fs.readFile(DB_FILE, 'utf8', (err, data) => {
         if (err) {
@@ -31,22 +31,22 @@ app.get('/api/data', (req, res) => {
             res.json(JSON.parse(data));
         } catch (e) {
             console.error('Error parsing DB:', e);
-            res.json({ products: [], categories: [], orders: [] });
+            res.json({ products: [], categories: [], orders: [], settings: {} });
         }
     });
 });
 
-// POST: Update a specific section (products, categories, or orders)
+// POST: Update a specific section (products, categories, orders, settings)
 app.post('/api/update', (req, res) => {
     const { type, data } = req.body;
     
-    if (!['products', 'categories', 'orders'].includes(type)) {
+    if (!['products', 'categories', 'orders', 'settings'].includes(type)) {
         return res.status(400).json({ error: 'Invalid data type' });
     }
 
     // Read current DB
     fs.readFile(DB_FILE, 'utf8', (err, fileData) => {
-        let db = { products: [], categories: [], orders: [] };
+        let db = { products: [], categories: [], orders: [], settings: {} };
         if (!err && fileData) {
             try {
                 db = JSON.parse(fileData);
