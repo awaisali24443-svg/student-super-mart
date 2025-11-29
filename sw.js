@@ -1,4 +1,5 @@
-const CACHE_NAME = 'freshmarket-shabqadar-v1';
+
+const CACHE_NAME = 'student-super-mart-v1';
 const STATIC_ASSETS = [
   './',
   './index.html',
