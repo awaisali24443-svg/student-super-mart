@@ -1,0 +1,84 @@
+{
+  "products": [
+    {
+      "id": "prod-local-1",
+      "name": "Rajjar Mithai (Famous)",
+      "slug": "rajjar-mithai",
+      "description": "The authentic famous sweet of Charsadda. Made with pure ghee and jaggery. A local delight.",
+      "category": "Local Specialties",
+      "price": 850,
+      "unit": "1kg Box",
+      "stock": 50,
+      "isOrganic": false,
+      "isOnSale": true,
+      "rating": 5.0,
+      "image": "https://images.unsplash.com/photo-1630402806961-09439601d009?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": "prod-local-2",
+      "name": "Charsadda Gurr (Jaggery)",
+      "slug": "charsadda-gurr",
+      "description": "Pure organic Jaggery (Gurr) fresh from the sugarcane fields of Charsadda.",
+      "category": "Local Specialties",
+      "price": 450,
+      "unit": "1kg",
+      "stock": 100,
+      "isOrganic": true,
+      "isOnSale": false,
+      "rating": 4.9,
+      "image": "https://images.unsplash.com/photo-1629185199651-7f7223687397?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": "prod-pantry-1",
+      "name": "Super Basmati Rice (Kainat)",
+      "slug": "basmati-rice",
+      "description": "Premium long grain Basmati Rice. Perfect for Biryani and Pulao.",
+      "category": "Pantry",
+      "price": 350,
+      "unit": "1kg",
+      "stock": 500,
+      "isOrganic": false,
+      "isOnSale": true,
+      "rating": 4.8,
+      "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": "prod-pantry-5",
+      "name": "Dalda Cooking Oil",
+      "slug": "dalda-oil",
+      "description": "Vitamin enriched cooking oil.",
+      "category": "Pantry",
+      "price": 550,
+      "unit": "1 Liter",
+      "stock": 300,
+      "isOrganic": false,
+      "isOnSale": true,
+      "rating": 4.9,
+      "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400"
+    },
+    {
+      "id": "prod-fruit-2",
+      "name": "Chaunsa Mangoes",
+      "slug": "mangoes",
+      "description": "Sweet and juicy seasonal Chaunsa Mangoes.",
+      "category": "Produce",
+      "price": 250,
+      "unit": "1kg",
+      "stock": 200,
+      "isOrganic": true,
+      "isOnSale": true,
+      "rating": 5.0,
+      "image": "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=400"
+    }
+  ],
+  "categories": [
+    "Produce",
+    "Dairy & Eggs",
+    "Bakery",
+    "Pantry",
+    "Beverages",
+    "Snacks",
+    "Local Specialties"
+  ],
+  "orders": []
+}

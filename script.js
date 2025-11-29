@@ -1,693 +1,78 @@
 
+
 // --- DATA & CONSTANTS ---
-const CATEGORIES = ['Produce', 'Dairy & Eggs', 'Bakery', 'Pantry', 'Beverages', 'Snacks', 'Local Specialties'];
 const TAX_RATE = 0.00;
 const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 200;
 
-// Preserved Real Data (Backup if localStorage is empty)
-const INITIAL_PRODUCTS = [
-  // --- LOCAL SPECIALTIES ---
-  {
-    id: 'prod-local-1',
-    name: 'Rajjar Mithai (Famous)',
-    slug: 'rajjar-mithai',
-    description: 'The authentic famous sweet of Charsadda. Made with pure ghee and jaggery. A local delight.',
-    category: 'Local Specialties',
-    price: 850,
-    unit: '1kg Box',
-    stock: 50,
-    isOrganic: false,
-    isOnSale: true,
-    rating: 5.0,
-    image: 'https://images.unsplash.com/photo-1630402806961-09439601d009?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-local-2',
-    name: 'Charsadda Gurr (Jaggery)',
-    slug: 'charsadda-gurr',
-    description: 'Pure organic Jaggery (Gurr) fresh from the sugarcane fields of Charsadda.',
-    category: 'Local Specialties',
-    price: 450,
-    unit: '1kg',
-    stock: 100,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1629185199651-7f7223687397?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-local-3',
-    name: 'Peshawari Qahwa Leaves',
-    slug: 'peshawari-qahwa',
-    description: 'Premium green tea leaves for the traditional Peshawari Qahwa.',
-    category: 'Local Specialties',
-    price: 600,
-    unit: '500g Pack',
-    stock: 80,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7c1f?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-     id: 'prod-local-4',
-     name: 'Chapli Kabab Masala (Special)',
-     slug: 'chapli-kabab-masala',
-     description: 'Authentic spice mix for making Peshawari Chapli Kabab at home.',
-     category: 'Local Specialties',
-     price: 150,
-     unit: '100g Packet',
-     stock: 200,
-     isOrganic: false,
-     isOnSale: false,
-     rating: 4.7,
-     image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=400'
-  },
-  // --- PANTRY ---
-  {
-    id: 'prod-pantry-1',
-    name: 'Super Basmati Rice (Kainat)',
-    slug: 'basmati-rice',
-    description: 'Premium long grain Basmati Rice. Perfect for Biryani and Pulao.',
-    category: 'Pantry',
-    price: 350,
-    unit: '1kg',
-    stock: 500,
-    isOrganic: false,
-    isOnSale: true,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-2',
-    name: 'Daal Chana (Split Chickpeas)',
-    slug: 'daal-chana',
-    description: 'High quality Daal Chana, cleaned and polished.',
-    category: 'Pantry',
-    price: 400,
-    unit: '1kg',
-    stock: 200,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1585996684447-3843e9944df3?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-3',
-    name: 'Daal Masoor (Red Lentils)',
-    slug: 'daal-masoor',
-    description: 'Quick cooking split red lentils.',
-    category: 'Pantry',
-    price: 380,
-    unit: '1kg',
-    stock: 150,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1610725656655-7098e1694a11?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-4',
-    name: 'Daal Maash (Washed)',
-    slug: 'daal-maash',
-    description: 'Premium white Daal Maash, stone free.',
-    category: 'Pantry',
-    price: 550,
-    unit: '1kg',
-    stock: 100,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1515543904379-3d757afe72e3?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-5',
-    name: 'Dalda Cooking Oil',
-    slug: 'dalda-oil',
-    description: 'Vitamin enriched cooking oil.',
-    category: 'Pantry',
-    price: 550,
-    unit: '1 Liter',
-    stock: 300,
-    isOrganic: false,
-    isOnSale: true,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-6',
-    name: 'Whole Wheat Flour (Chakki Atta)',
-    slug: 'wheat-flour',
-    description: 'Freshly ground whole wheat flour.',
-    category: 'Pantry',
-    price: 160,
-    unit: '1kg',
-    stock: 300,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1627485937980-221c88ac04f9?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-7',
-    name: 'White Sugar (Cheeni)',
-    slug: 'sugar',
-    description: 'Refined white sugar granules.',
-    category: 'Pantry',
-    price: 155,
-    unit: '1kg',
-    stock: 400,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-8',
-    name: 'Shan Biryani Masala',
-    slug: 'shan-biryani',
-    description: 'The classic spice mix for perfect Biryani.',
-    category: 'Pantry',
-    price: 120,
-    unit: 'Pack',
-    stock: 500,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-9',
-    name: 'National Iodized Salt',
-    slug: 'national-salt',
-    description: 'Refined iodized table salt.',
-    category: 'Pantry',
-    price: 60,
-    unit: '800g Pack',
-    stock: 600,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1518110925495-569698eb4621?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-pantry-10',
-    name: 'Red Chili Powder',
-    slug: 'red-chili',
-    description: 'Extra hot ground red chili powder.',
-    category: 'Pantry',
-    price: 800,
-    unit: '1kg',
-    stock: 100,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1624806992066-5d5482354673?auto=format&fit=crop&q=80&w=400'
-  },
-  // --- BEVERAGES ---
-  {
-    id: 'prod-bev-1',
-    name: 'Kenya Tea (Loose)',
-    slug: 'kenya-tea',
-    description: 'Strong premium Kenyan dust tea for strong color and taste.',
-    category: 'Beverages',
-    price: 1200,
-    unit: '1kg',
-    stock: 100,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1571934811356-5cc55449d0f1?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bev-2',
-    name: 'Ahmad Tea (London Blend)',
-    slug: 'ahmad-tea',
-    description: 'Aromatic and refined Ahmad Tea blend.',
-    category: 'Beverages',
-    price: 1400,
-    unit: '1kg',
-    stock: 80,
-    isOrganic: false,
-    isOnSale: true,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1597481499750-3e6b22637e12?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bev-3',
-    name: 'Qamar Tea',
-    slug: 'qamar-tea',
-    description: 'The local favorite Qamar Tea brand.',
-    category: 'Beverages',
-    price: 1550,
-    unit: '1kg',
-    stock: 60,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1564890369478-c5af469afff9?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bev-4',
-    name: 'Tapal Danedar',
-    slug: 'tapal-danedar',
-    description: 'Pakistan\'s favorite strong tea blend.',
-    category: 'Beverages',
-    price: 1300,
-    unit: '950g Pack',
-    stock: 150,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bev-5',
-    name: 'Rooh Afza',
-    slug: 'rooh-afza',
-    description: 'The summer refreshing syrup of the east.',
-    category: 'Beverages',
-    price: 450,
-    unit: '800ml Bottle',
-    stock: 120,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 5.0,
-    image: 'https://images.unsplash.com/photo-1546830237-77569a9b70b4?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bev-6',
-    name: 'Coca Cola',
-    slug: 'coca-cola',
-    description: 'Chilled soft drink.',
-    category: 'Beverages',
-    price: 180,
-    unit: '1.5 Liter',
-    stock: 200,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bev-7',
-    name: 'Mineral Water (Nestle)',
-    slug: 'mineral-water',
-    description: 'Pure drinking water.',
-    category: 'Beverages',
-    price: 100,
-    unit: '1.5 Liter',
-    stock: 300,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1560023907-5f339617ea30?auto=format&fit=crop&q=80&w=400'
-  },
-  // --- SNACKS ---
-  {
-    id: 'prod-snack-1',
-    name: 'Roasted Peanuts (Mong Phali)',
-    slug: 'peanuts',
-    description: 'Freshly roasted peanuts with shell.',
-    category: 'Snacks',
-    price: 700,
-    unit: '1kg',
-    stock: 150,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1627038146747-9753e1a067a9?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-snack-2',
-    name: 'American Almonds (Badam)',
-    slug: 'almonds',
-    description: 'High quality sweet American Almonds.',
-    category: 'Snacks',
-    price: 2200,
-    unit: '1kg',
-    stock: 50,
-    isOrganic: true,
-    isOnSale: true,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-snack-3',
-    name: 'Pistachios (Pista)',
-    slug: 'pista',
-    description: 'Salted and roasted Pistachios (Namkeen Pista).',
-    category: 'Snacks',
-    price: 3500,
-    unit: '1kg',
-    stock: 40,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 5.0,
-    image: 'https://images.unsplash.com/photo-1615486511484-92e172cc416d?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-snack-4',
-    name: 'Walnuts (Akhrot)',
-    slug: 'walnuts',
-    description: 'Paper shell walnuts, easy to break.',
-    category: 'Snacks',
-    price: 1800,
-    unit: '1kg',
-    stock: 60,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1582833620286-a979c09d57a3?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-snack-5',
-    name: 'Mix Nimco',
-    slug: 'mix-nimco',
-    description: 'Spicy and crunchy Mix Nimco.',
-    category: 'Snacks',
-    price: 400,
-    unit: '500g',
-    stock: 100,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1610452392723-da7d25e01662?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-snack-6',
-    name: 'Lays Masala',
-    slug: 'lays-masala',
-    description: 'Spicy potato chips.',
-    category: 'Snacks',
-    price: 100,
-    unit: 'Large Pack',
-    stock: 200,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-snack-7',
-    name: 'Sooper Biscuits',
-    slug: 'sooper',
-    description: 'Egg and Milk cookies, family pack.',
-    category: 'Snacks',
-    price: 120,
-    unit: 'Family Pack',
-    stock: 150,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=400'
-  },
-  // --- PRODUCE ---
-  {
-    id: 'prod-veg-1',
-    name: 'Red Onions',
-    slug: 'onions',
-    description: 'Local dry red onions.',
-    category: 'Produce',
-    price: 180,
-    unit: '1kg',
-    stock: 200,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.4,
-    image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-veg-2',
-    name: 'Potatoes (Aloo)',
-    slug: 'potatoes',
-    description: 'Fresh seasonal potatoes.',
-    category: 'Produce',
-    price: 120,
-    unit: '1kg',
-    stock: 300,
-    isOrganic: true,
-    isOnSale: true,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-veg-3',
-    name: 'Garlic (Lehsan)',
-    slug: 'garlic',
-    description: 'Desi Garlic bulbs.',
-    category: 'Produce',
-    price: 320,
-    unit: '1kg',
-    stock: 80,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1615477265893-b64831818178?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-veg-4',
-    name: 'Ginger (Adrak)',
-    slug: 'ginger',
-    description: 'Fresh washed ginger.',
-    category: 'Produce',
-    price: 600,
-    unit: '1kg',
-    stock: 60,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1615477815344-96d5e0f7f98d?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-veg-5',
-    name: 'Tomatoes',
-    slug: 'tomatoes',
-    description: 'Red ripe tomatoes.',
-    category: 'Produce',
-    price: 150,
-    unit: '1kg',
-    stock: 150,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.3,
-    image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-veg-6',
-    name: 'Green Chilies',
-    slug: 'green-chilies',
-    description: 'Spicy fresh green chilies.',
-    category: 'Produce',
-    price: 200,
-    unit: '1kg',
-    stock: 80,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1596700057209-66c3c72643a6?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-veg-7',
-    name: 'Cucumber (Kheera)',
-    slug: 'cucumber',
-    description: 'Fresh salad cucumbers.',
-    category: 'Produce',
-    price: 80,
-    unit: '1kg',
-    stock: 120,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.4,
-    image: 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-fruit-1',
-    name: 'Bananas',
-    slug: 'bananas',
-    description: 'Sweet yellow bananas.',
-    category: 'Produce',
-    price: 150,
-    unit: 'Dozen',
-    stock: 100,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-fruit-2',
-    name: 'Chaunsa Mangoes',
-    slug: 'mangoes',
-    description: 'Sweet and juicy seasonal Chaunsa Mangoes.',
-    category: 'Produce',
-    price: 250,
-    unit: '1kg',
-    stock: 200,
-    isOrganic: true,
-    isOnSale: true,
-    rating: 5.0,
-    image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=400'
-  },
-  // --- DAIRY & EGGS ---
-  {
-    id: 'prod-dairy-1',
-    name: 'Buffalo Milk',
-    slug: 'buffalo-milk',
-    description: 'Fresh pure buffalo milk.',
-    category: 'Dairy & Eggs',
-    price: 220,
-    unit: '1 Liter',
-    stock: 40,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-dairy-2',
-    name: 'Desi Eggs',
-    slug: 'desi-eggs',
-    description: 'Organic free-range eggs.',
-    category: 'Dairy & Eggs',
-    price: 450,
-    unit: 'Dozen',
-    stock: 30,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-dairy-3',
-    name: 'Desi Ghee',
-    slug: 'desi-ghee',
-    description: 'Pure homemade Desi Ghee.',
-    category: 'Dairy & Eggs',
-    price: 2500,
-    unit: '1kg',
-    stock: 15,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 5.0,
-    image: 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-dairy-4',
-    name: 'Yogurt (Dahi)',
-    slug: 'yogurt',
-    description: 'Fresh thick yogurt.',
-    category: 'Dairy & Eggs',
-    price: 200,
-    unit: '1kg',
-    stock: 50,
-    isOrganic: true,
-    isOnSale: false,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1584278860047-22db9ff82bed?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-dairy-5',
-    name: 'Butter (Blue Band)',
-    slug: 'butter',
-    description: 'Table margarine butter.',
-    category: 'Dairy & Eggs',
-    price: 400,
-    unit: '200g Block',
-    stock: 80,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&q=80&w=400'
-  },
-  // --- BAKERY ---
-  {
-    id: 'prod-bakery-1',
-    name: 'Fresh Tandoori Naan',
-    slug: 'tandoori-naan',
-    description: 'Hot and fluffy Naan from the local Tandoor.',
-    category: 'Bakery',
-    price: 30,
-    unit: 'Piece',
-    stock: 50,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bakery-2',
-    name: 'Bakery Rusk',
-    slug: 'bakery-rusk',
-    description: 'Crispy Rusk, perfect for dipping in tea.',
-    category: 'Bakery',
-    price: 250,
-    unit: 'Pack',
-    stock: 80,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.5,
-    image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bakery-3',
-    name: 'Milky Bread (Large)',
-    slug: 'milky-bread',
-    description: 'Soft sliced milky bread, fresh daily.',
-    category: 'Bakery',
-    price: 220,
-    unit: 'Large Loaf',
-    stock: 60,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=400'
-  },
-  {
-    id: 'prod-bakery-4',
-    name: 'Cake Rusk',
-    slug: 'cake-rusk',
-    description: 'Premium cake rusk made with eggs.',
-    category: 'Bakery',
-    price: 450,
-    unit: '500g Pack',
-    stock: 40,
-    isOrganic: false,
-    isOnSale: false,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=400'
-  }
-];
+// Data containers (Will be loaded from Server)
+let products = [];
+let categories = [];
+let orders = [];
 
-// --- STATE MANAGEMENT ---
-// Load products from localStorage or fall back to initial list
-let products = JSON.parse(localStorage.getItem('products')) || INITIAL_PRODUCTS;
+// Local containers (Per device/user)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let user = JSON.parse(localStorage.getItem('user')) || null;
-// Mock Orders DB stored in memory/session for demo (or localstorage to persist)
-let orders = JSON.parse(localStorage.getItem('orders')) || [
-  {
-    id: 'ord-123',
-    customerName: 'Jane Doe',
-    email: 'jane@example.com',
-    items: [products[0], products[2]],
-    total: 1450,
-    status: 'delivered',
-    paymentMethod: 'Cash on Delivery',
-    date: new Date().toISOString()
-  }
-];
+
+// --- API FUNCTIONS ---
+async function fetchData() {
+    try {
+        const res = await fetch('/api/data');
+        const data = await res.json();
+        products = data.products || [];
+        categories = data.categories || [];
+        orders = data.orders || [];
+        
+        // Ensure default categories if empty
+        if (categories.length === 0) {
+            categories = ['Produce', 'Dairy & Eggs', 'Bakery', 'Pantry', 'Beverages', 'Snacks', 'Local Specialties'];
+        }
+        console.log('Data loaded from server');
+    } catch (err) {
+        console.error('Failed to load data:', err);
+        alert('Error loading store data. Please refresh.');
+    }
+}
+
+async function syncData(type, data) {
+    try {
+        await fetch('/api/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, data })
+        });
+    } catch (err) {
+        console.error(`Failed to sync ${type}:`, err);
+        alert(`Error saving ${type}. Please try again.`);
+    }
+}
 
 // --- UTILS ---
 const formatPrice = (p) => `Rs. ${p.toFixed(0)}`;
+
 const saveCart = () => {
   localStorage.setItem('cart', JSON.stringify(cart));
   updateCartUI();
 };
 const saveUser = () => localStorage.setItem('user', JSON.stringify(user));
-const saveOrders = () => localStorage.setItem('orders', JSON.stringify(orders));
-const saveProducts = () => localStorage.setItem('products', JSON.stringify(products));
+
+// Server-side saves
+const saveOrders = () => syncData('orders', orders);
+const saveProducts = () => syncData('products', products);
+const saveCategories = () => syncData('categories', categories);
+
+function getCategoryIcon(cat) {
+  const map = {
+    'Produce': 'fa-carrot',
+    'Dairy & Eggs': 'fa-cow',
+    'Bakery': 'fa-bread-slice',
+    'Pantry': 'fa-jar',
+    'Beverages': 'fa-bottle-water',
+    'Snacks': 'fa-cookie-bite',
+    'Local Specialties': 'fa-star'
+  };
+  return map[cat] || 'fa-basket-shopping';
+}
 
 // --- CART FUNCTIONS ---
 function addToCart(product, quantity = 1) {
@@ -731,13 +116,21 @@ function getCartTotals() {
 
 // --- UI RENDERING ---
 function openCart() {
-  document.getElementById('cart-sidebar').classList.remove('translate-x-full');
-  document.getElementById('cart-backdrop').classList.remove('hidden');
+  const sidebar = document.getElementById('cart-sidebar');
+  const backdrop = document.getElementById('cart-backdrop');
+  if (sidebar && backdrop) {
+    sidebar.classList.remove('translate-x-full');
+    backdrop.classList.remove('hidden');
+  }
 }
 
 function closeCart() {
-  document.getElementById('cart-sidebar').classList.add('translate-x-full');
-  document.getElementById('cart-backdrop').classList.add('hidden');
+  const sidebar = document.getElementById('cart-sidebar');
+  const backdrop = document.getElementById('cart-backdrop');
+  if (sidebar && backdrop) {
+    sidebar.classList.add('translate-x-full');
+    backdrop.classList.add('hidden');
+  }
 }
 
 function updateCartUI() {
@@ -760,9 +153,11 @@ function updateCartUI() {
           <p>Your basket is empty.</p>
         </div>
       `;
-      document.getElementById('cart-footer').style.display = 'none';
+      const footer = document.getElementById('cart-footer');
+      if (footer) footer.style.display = 'none';
     } else {
-      document.getElementById('cart-footer').style.display = 'block';
+      const footer = document.getElementById('cart-footer');
+      if (footer) footer.style.display = 'block';
       container.innerHTML = cart.map(item => `
         <div class="flex gap-4 border-b border-gray-50 pb-4 last:border-0">
           <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-lg bg-gray-50">
@@ -785,9 +180,12 @@ function updateCartUI() {
       `).join('');
       
       // Update footer totals
-      document.getElementById('cart-subtotal').innerText = formatPrice(subtotal);
-      document.getElementById('cart-shipping').innerText = shipping === 0 ? 'Free' : formatPrice(shipping);
-      document.getElementById('cart-total').innerText = formatPrice(total);
+      const subEl = document.getElementById('cart-subtotal');
+      const shipEl = document.getElementById('cart-shipping');
+      const totEl = document.getElementById('cart-total');
+      if (subEl) subEl.innerText = formatPrice(subtotal);
+      if (shipEl) shipEl.innerText = shipping === 0 ? 'Free' : formatPrice(shipping);
+      if (totEl) totEl.innerText = formatPrice(total);
     }
   }
 }
@@ -796,15 +194,13 @@ function renderHeader() {
   const container = document.getElementById('header-container');
   if (!container) return;
 
-  const authLinks = user 
-    ? `<div class="flex items-center gap-2">
-         <span class="text-sm font-medium hidden md:block">${user.name}</span>
-         <button onclick="logout()" class="text-gray-500 hover:text-red-500 text-sm">Logout</button>
-       </div>`
-    : `<a href="login.html" class="text-sm font-medium text-gray-600 hover:text-emerald-600">Login</a>`;
-
+  // Only show Admin Dashboard link if user is logged in (admin)
   const adminLink = user && user.role === 'admin' 
-    ? `<a href="admin.html" class="text-sm font-medium text-gray-600 hover:text-emerald-600">Admin Dashboard</a>` 
+    ? `<a href="admin.html" class="text-sm font-medium text-white bg-emerald-700 px-4 py-2 rounded hover:bg-emerald-800">Admin Dashboard</a>` 
+    : '';
+  
+  const logoutBtn = user 
+    ? `<button onclick="logout()" class="text-sm font-medium text-gray-500 hover:text-red-500">Logout</button>`
     : '';
 
   container.innerHTML = `
@@ -813,14 +209,14 @@ function renderHeader() {
         <div class="flex items-center justify-between h-16">
           <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-emerald-600">
             <i class="fa-solid fa-leaf"></i>
-            <span>Student Super Mart</span>
+            <span>FreshMarket</span>
           </a>
           <nav class="hidden md:flex items-center space-x-8">
             <a href="shop.html" class="text-sm font-medium text-gray-600 hover:text-emerald-600">Shop</a>
             ${adminLink}
           </nav>
           <div class="flex items-center space-x-4">
-            ${authLinks}
+            ${logoutBtn}
             <button onclick="openCart()" class="relative p-2 text-gray-600 hover:text-emerald-600 transition-colors">
               <i class="fa-solid fa-cart-shopping text-xl"></i>
               <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-bounce" style="display:none">0</span>
@@ -860,7 +256,7 @@ function renderFooter() {
           <div>
             <div class="flex items-center gap-2 text-2xl font-bold text-white mb-4">
               <i class="fa-solid fa-leaf text-emerald-500"></i>
-              <span>Student Super Mart</span>
+              <span>FreshMarket</span>
             </div>
             <p class="text-sm text-gray-400">Fresh groceries delivered to your doorstep in Shabqadar, Charsadda & Peshawar.</p>
           </div>
@@ -868,15 +264,14 @@ function renderFooter() {
             <h3 class="text-white font-bold mb-4">Shop</h3>
             <ul class="space-y-2 text-sm">
               <li><a href="shop.html" class="hover:text-emerald-500">All Products</a></li>
-              <li><a href="shop.html?category=Produce" class="hover:text-emerald-500">Produce</a></li>
-              <li><a href="shop.html?category=Dairy%20%26%20Eggs" class="hover:text-emerald-500">Dairy & Eggs</a></li>
+              ${categories.slice(0, 3).map(c => `<li><a href="shop.html?category=${encodeURIComponent(c)}" class="hover:text-emerald-500">${c}</a></li>`).join('')}
             </ul>
           </div>
           <div>
             <h3 class="text-white font-bold mb-4">Company</h3>
             <ul class="space-y-2 text-sm">
               <li><a href="#" class="hover:text-emerald-500">About Us</a></li>
-              <li><a href="#" class="hover:text-emerald-500">Privacy Policy</a></li>
+              <li><a href="login.html" class="hover:text-emerald-500">Admin Login</a></li>
             </ul>
           </div>
           <div>
@@ -893,15 +288,16 @@ function renderFooter() {
 }
 
 // --- AUTH FUNCTIONS ---
-function login(email, role) {
+function login(email) {
+  // Only Admin Login allowed
   user = {
-    id: 'user-123',
-    name: email.split('@')[0],
-    email,
-    role
+    id: 'admin-001',
+    name: 'Administrator',
+    email: email,
+    role: 'admin'
   };
   saveUser();
-  window.location.href = role === 'admin' ? 'admin.html' : 'index.html';
+  window.location.href = 'admin.html';
 }
 
 function logout() {
@@ -918,38 +314,80 @@ function initHome() {
     const featured = products.filter(p => p.isOnSale).slice(0, 4);
     featuredContainer.innerHTML = featured.map(p => createProductCard(p)).join('');
   }
+
+  const categoryContainer = document.getElementById('home-categories');
+  if (categoryContainer) {
+    categoryContainer.innerHTML = categories.map(cat => `
+        <a href="shop.html?category=${encodeURIComponent(cat)}" class="group bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center hover:shadow-md transition-shadow hover:border-emerald-200">
+            <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                <i class="fa-solid ${getCategoryIcon(cat)}"></i>
+            </div>
+            <span class="font-medium text-gray-700 text-center text-sm">${cat}</span>
+        </a>
+    `).join('');
+  }
 }
 
 function initShop() {
   const params = new URLSearchParams(window.location.search);
   const catParam = params.get('category');
   const searchParam = params.get('q');
-  
-  // Render Categories Sidebar
+  const saleParam = params.get('sale');
+
+  // Sidebar Inputs
+  const organicInput = document.getElementById('filter-organic');
+  const priceInput = document.getElementById('filter-price');
+  const priceDisplay = document.getElementById('price-display');
+
+  // Render Sidebar Categories
   const catList = document.getElementById('category-list');
   if(catList) {
       catList.innerHTML = `
         <li><a href="shop.html" class="block text-sm ${!catParam ? 'text-emerald-600 font-bold' : 'text-gray-600 hover:text-emerald-600'}">All Products</a></li>
-        ${CATEGORIES.map(c => `<li><a href="shop.html?category=${encodeURIComponent(c)}" class="block text-sm ${catParam === c ? 'text-emerald-600 font-bold' : 'text-gray-600 hover:text-emerald-600'}">${c}</a></li>`).join('')}
+        ${categories.map(c => `<li><a href="shop.html?category=${encodeURIComponent(c)}" class="block text-sm ${catParam === c ? 'text-emerald-600 font-bold' : 'text-gray-600 hover:text-emerald-600'}">${c}</a></li>`).join('')}
       `;
   }
 
-  // Filter
-  let filtered = products;
-  if (catParam) filtered = filtered.filter(p => p.category === catParam);
-  if (searchParam) {
-      const q = searchParam.toLowerCase();
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+  function renderGrid() {
+      let filtered = products;
+
+      // 1. URL Filters
+      if (catParam) filtered = filtered.filter(p => p.category === catParam);
+      if (searchParam) {
+          const q = searchParam.toLowerCase();
+          filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+      }
+      if (saleParam) filtered = filtered.filter(p => p.isOnSale);
+
+      // 2. Client Side Filters
+      if (organicInput && organicInput.checked) {
+          filtered = filtered.filter(p => p.isOrganic);
+      }
+      if (priceInput) {
+          const maxPrice = Number(priceInput.value);
+          filtered = filtered.filter(p => p.price <= maxPrice);
+          if (priceDisplay) priceDisplay.innerText = `Rs. ${maxPrice}`;
+      }
+
+      // Update Counts & Title
+      const title = document.getElementById('page-title');
+      const count = document.getElementById('product-count');
+      if (title) title.innerText = catParam || (saleParam ? 'Current Deals' : 'All Products');
+      if (count) count.innerText = `${filtered.length} items found`;
+
+      // Render
+      const grid = document.getElementById('product-grid');
+      if(grid) {
+          grid.innerHTML = filtered.length ? filtered.map(p => createProductCard(p)).join('') : '<div class="col-span-full text-center text-gray-500 py-8">No products found matching your criteria.</div>';
+      }
   }
-  
-  // Render Grid
-  const grid = document.getElementById('product-grid');
-  const title = document.getElementById('page-title');
-  if(title) title.innerText = catParam || 'All Products';
-  
-  if(grid) {
-      grid.innerHTML = filtered.length ? filtered.map(p => createProductCard(p)).join('') : '<p>No products found.</p>';
-  }
+
+  // Event Listeners for Filters
+  if (organicInput) organicInput.addEventListener('change', renderGrid);
+  if (priceInput) priceInput.addEventListener('input', renderGrid);
+
+  // Initial Render
+  renderGrid();
 }
 
 function createProductCard(product) {
@@ -957,16 +395,24 @@ function createProductCard(product) {
     <a href="product.html?slug=${product.slug}" class="group bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col h-full overflow-hidden block">
       <div class="relative h-48 bg-gray-50 overflow-hidden">
         <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+        ${product.isOrganic ? '<span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Organic</span>' : ''}
         ${product.isOnSale ? '<span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">On Sale</span>' : ''}
       </div>
       <div class="p-4 flex flex-col flex-1">
         <div class="flex-1">
           <h3 class="font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">${product.name}</h3>
+          <div class="flex items-center gap-1 my-1">
+            <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+            <span class="text-xs text-gray-500">${product.rating || '4.5'}</span>
+          </div>
           <p class="text-sm text-gray-500 line-clamp-2 mt-2">${product.description}</p>
         </div>
         <div class="mt-4 flex items-center justify-between">
             <div>
-                <p class="text-lg font-bold text-gray-900">${formatPrice(product.price)}</p>
+                <div class="flex flex-col">
+                     <span class="text-lg font-bold text-emerald-700">${formatPrice(product.price)}</span>
+                     ${product.isOnSale ? `<span class="text-xs text-gray-400 line-through">${formatPrice(product.price * 1.2)}</span>` : ''}
+                </div>
                 <p class="text-xs text-gray-400">per ${product.unit}</p>
             </div>
             <button onclick="event.preventDefault(); addToCart(products.find(p => p.id === '${product.id}'))" class="bg-emerald-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-emerald-700 shadow-md">
@@ -984,7 +430,7 @@ function initProduct() {
     const product = products.find(p => p.slug === slug);
     
     if(!product) {
-        document.body.innerHTML = '<div class="p-10 text-center">Product not found</div>';
+        document.body.innerHTML = '<div class="p-10 text-center"><h1 class="text-xl">Product not found</h1><a href="shop.html" class="text-emerald-600 underline">Back to Shop</a></div>';
         return;
     }
 
@@ -1005,44 +451,65 @@ function initProduct() {
     window.decreaseQty = () => { if(qty > 1) qty--; updateBtn(); };
     
     function updateBtn() {
-        qtySpan.innerText = qty;
-        btn.innerText = `Add to Cart - ${formatPrice(product.price * qty)}`;
-        btn.onclick = () => addToCart(product, qty);
+        if(qtySpan) qtySpan.innerText = qty;
+        if(btn) {
+            btn.innerText = `Add to Cart - ${formatPrice(product.price * qty)}`;
+            btn.onclick = () => addToCart(product, qty);
+        }
     }
     updateBtn();
 }
 
 function initCheckout() {
-    const { subtotal, tax, shipping, total, itemCount } = getCartTotals();
+    const { subtotal, tax, shipping, total } = getCartTotals();
     
     // Fill Summary
     const summary = document.getElementById('order-summary');
     if(summary) {
-        summary.innerHTML = cart.map(item => `
-          <div class="flex gap-4 mb-4">
-             <div class="relative">
-                <img src="${item.image}" class="w-16 h-16 rounded-lg object-cover">
-                <span class="absolute -top-2 -right-2 bg-gray-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">${item.quantity}</span>
-             </div>
-             <div class="flex-1">
-                 <h4 class="font-medium text-gray-900">${item.name}</h4>
-                 <p class="text-sm text-gray-500">${formatPrice(item.price)}</p>
-             </div>
-             <span class="font-medium">${formatPrice(item.price * item.quantity)}</span>
-          </div>
-        `).join('');
+        if (cart.length === 0) {
+             summary.innerHTML = '<p class="text-gray-500 text-center py-4">Your cart is empty</p>';
+        } else {
+             summary.innerHTML = cart.map(item => `
+              <div class="flex gap-4 mb-4">
+                 <div class="relative">
+                    <img src="${item.image}" class="w-16 h-16 rounded-lg object-cover">
+                    <span class="absolute -top-2 -right-2 bg-gray-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">${item.quantity}</span>
+                 </div>
+                 <div class="flex-1">
+                     <h4 class="font-medium text-gray-900">${item.name}</h4>
+                     <p class="text-sm text-gray-500">${formatPrice(item.price)}</p>
+                 </div>
+                 <span class="font-medium">${formatPrice(item.price * item.quantity)}</span>
+              </div>
+            `).join('');
+        }
     }
     
-    document.getElementById('chk-subtotal').innerText = formatPrice(subtotal);
-    document.getElementById('chk-shipping').innerText = shipping === 0 ? 'Free' : formatPrice(shipping);
-    document.getElementById('chk-total').innerText = formatPrice(total);
-    document.getElementById('chk-btn').innerText = `Place Order - ${formatPrice(total)}`;
+    const els = {
+        sub: document.getElementById('chk-subtotal'),
+        ship: document.getElementById('chk-shipping'),
+        tot: document.getElementById('chk-total'),
+        btn: document.getElementById('chk-btn')
+    };
+
+    if(els.sub) els.sub.innerText = formatPrice(subtotal);
+    if(els.ship) els.ship.innerText = shipping === 0 ? 'Free' : formatPrice(shipping);
+    if(els.tot) els.tot.innerText = formatPrice(total);
+    if(els.btn) els.btn.innerText = `Place Order - ${formatPrice(total)}`;
 
     // Handle Form
     const form = document.getElementById('checkout-form');
     if(form) {
-        form.onsubmit = (e) => {
+        form.onsubmit = async (e) => {
             e.preventDefault();
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+            
+            els.btn.innerText = "Processing...";
+            els.btn.disabled = true;
+
             const formData = new FormData(form);
             const paymentMethod = formData.get('paymentMethod');
             const newOrder = {
@@ -1055,8 +522,9 @@ function initCheckout() {
                 paymentMethod: paymentMethod,
                 date: new Date().toISOString()
             };
+            
             orders.unshift(newOrder);
-            saveOrders();
+            await saveOrders();
             clearCart();
             window.location.href = 'success.html';
         };
@@ -1076,13 +544,17 @@ function initAdmin() {
       container.innerHTML = `
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <button onclick="logout()" class="text-red-600 hover:text-red-800">Logout</button>
+            <div class="flex items-center gap-4">
+                 <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">Logged in as Admin</span>
+                 <button onclick="logout()" class="text-red-600 hover:text-red-800">Logout</button>
+            </div>
         </div>
 
         <!-- Tabs -->
         <div class="flex gap-4 mb-8 border-b border-gray-200">
             <button onclick="switchAdminTab('orders')" id="tab-orders" class="pb-4 px-4 font-medium border-b-2 border-emerald-600 text-emerald-600">Orders</button>
-            <button onclick="switchAdminTab('products')" id="tab-products" class="pb-4 px-4 font-medium text-gray-500 hover:text-gray-800">Products</button>
+            <button onclick="switchAdminTab('products')" id="tab-products" class="pb-4 px-4 font-medium text-gray-500 hover:text-gray-800">Inventory</button>
+            <button onclick="switchAdminTab('categories')" id="tab-categories" class="pb-4 px-4 font-medium text-gray-500 hover:text-gray-800">Categories</button>
         </div>
 
         <!-- Content Area -->
@@ -1099,11 +571,15 @@ function initAdmin() {
 
 window.switchAdminTab = (tab) => {
     // Update Tab UI
-    document.getElementById('tab-orders').className = tab === 'orders' ? 'pb-4 px-4 font-medium border-b-2 border-emerald-600 text-emerald-600' : 'pb-4 px-4 font-medium text-gray-500 hover:text-gray-800';
-    document.getElementById('tab-products').className = tab === 'products' ? 'pb-4 px-4 font-medium border-b-2 border-emerald-600 text-emerald-600' : 'pb-4 px-4 font-medium text-gray-500 hover:text-gray-800';
+    ['orders', 'products', 'categories'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if(t === tab) el.className = 'pb-4 px-4 font-medium border-b-2 border-emerald-600 text-emerald-600';
+        else el.className = 'pb-4 px-4 font-medium text-gray-500 hover:text-gray-800';
+    });
 
     if(tab === 'orders') renderAdminOrders();
     if(tab === 'products') renderAdminProducts();
+    if(tab === 'categories') renderAdminCategories();
 }
 
 function renderAdminOrders() {
@@ -1159,15 +635,67 @@ function renderAdminOrders() {
     `;
 }
 
-window.updateOrderStatus = (id, status) => {
+window.updateOrderStatus = async (id, status) => {
     const order = orders.find(o => o.id === id);
     if(order) {
         order.status = status;
-        saveOrders();
+        await saveOrders();
         renderAdminOrders();
     }
 }
 
+// --- ADMIN CATEGORIES ---
+function renderAdminCategories() {
+    const content = document.getElementById('admin-content');
+    content.innerHTML = `
+        <div class="flex justify-end mb-4">
+            <button onclick="addCategory()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-700">
+                <i class="fa-solid fa-plus mr-2"></i> Add Category
+            </button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden max-w-2xl mx-auto">
+             <table class="w-full text-left">
+                <thead class="bg-gray-50 text-gray-500 text-sm uppercase">
+                    <tr>
+                        <th class="p-4">Category Name</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    ${categories.map(c => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-medium text-gray-900">${c}</td>
+                            <td class="p-4 text-right">
+                                <button onclick="deleteCategory('${c}')" class="text-red-600 hover:text-red-800 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+window.addCategory = async () => {
+    const name = prompt("Enter new category name:");
+    if(name && !categories.includes(name)) {
+        categories.push(name);
+        await saveCategories();
+        renderAdminCategories();
+    } else if (categories.includes(name)) {
+        alert("Category already exists!");
+    }
+}
+
+window.deleteCategory = async (name) => {
+    if(confirm(`Delete category "${name}"? Products in this category will need updating.`)) {
+        categories = categories.filter(c => c !== name);
+        await saveCategories();
+        renderAdminCategories();
+    }
+}
+
+// --- ADMIN PRODUCTS ---
 function renderAdminProducts() {
     const content = document.getElementById('admin-content');
     content.innerHTML = `
@@ -1182,7 +710,7 @@ function renderAdminProducts() {
                     <tr>
                         <th class="p-4">Product</th>
                         <th class="p-4">Price</th>
-                        <th class="p-4">Stock</th>
+                        <th class="p-4 text-center">Stock</th>
                         <th class="p-4">Category</th>
                         <th class="p-4 text-right">Actions</th>
                     </tr>
@@ -1195,7 +723,11 @@ function renderAdminProducts() {
                                 <span class="font-medium text-gray-900">${p.name}</span>
                             </td>
                             <td class="p-4">Rs. ${p.price}</td>
-                            <td class="p-4">${p.stock}</td>
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span class="font-bold ${p.stock < 10 ? 'text-red-600' : 'text-gray-900'}">${p.stock}</span>
+                                </div>
+                            </td>
                             <td class="p-4"><span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">${p.category}</span></td>
                             <td class="p-4 text-right space-x-2">
                                 <button onclick="openProductModal('${p.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
@@ -1209,21 +741,25 @@ function renderAdminProducts() {
     `;
 }
 
-window.deleteProduct = (id) => {
+window.deleteProduct = async (id) => {
     if(confirm('Are you sure you want to delete this product?')) {
         products = products.filter(p => p.id !== id);
-        saveProducts();
+        await saveProducts();
         renderAdminProducts();
     }
 }
 
+// Global variable to hold image data during modal editing
+let currentImageBase64 = '';
+
 window.openProductModal = (id = null) => {
     const product = id ? products.find(p => p.id === id) : null;
     const isEdit = !!product;
+    currentImageBase64 = product ? product.image : '';
 
     const modal = document.getElementById('modal-container');
     modal.innerHTML = `
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                     <h2 class="text-xl font-bold">${isEdit ? 'Edit Product' : 'Add New Product'}</h2>
@@ -1238,8 +774,22 @@ window.openProductModal = (id = null) => {
                             <input name="name" required value="${product ? product.name : ''}" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
                         </div>
                          <div class="col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                            <input name="image" required value="${product ? product.image : 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400'}" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+                            <div class="flex items-center gap-4">
+                                <div id="preview-container" class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                                    ${product ? `<img src="${product.image}" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-image"></i></div>'}
+                                </div>
+                                <div class="flex-1">
+                                    <input type="file" id="image-upload" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                                    <p class="text-xs text-gray-400 mt-1">Upload your own image (Max 1MB recommended)</p>
+                                    <div class="relative flex items-center py-2">
+                                        <div class="flex-grow border-t border-gray-200"></div>
+                                        <span class="flex-shrink-0 mx-4 text-gray-400 text-xs">OR USE URL</span>
+                                        <div class="flex-grow border-t border-gray-200"></div>
+                                    </div>
+                                    <input name="imageUrl" placeholder="Paste Image URL" value="${product && product.image.startsWith('http') ? product.image : ''}" class="w-full border rounded-lg px-3 py-1 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                                </div>
+                            </div>
                         </div>
                          <div class="col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -1248,7 +798,7 @@ window.openProductModal = (id = null) => {
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
                             <select name="category" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
-                                ${CATEGORIES.map(c => `<option value="${c}" ${product && product.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                                ${categories.map(c => `<option value="${c}" ${product && product.category === c ? 'selected' : ''}>${c}</option>`).join('')}
                             </select>
                         </div>
                         <div>
@@ -1282,16 +832,41 @@ window.openProductModal = (id = null) => {
             </div>
         </div>
     `;
+
+    // Handle Image Upload
+    document.getElementById('image-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                currentImageBase64 = evt.target.result;
+                document.getElementById('preview-container').innerHTML = `<img src="${currentImageBase64}" class="w-full h-full object-cover">`;
+                // Clear URL input to avoid confusion
+                document.querySelector('input[name="imageUrl"]').value = ''; 
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }
 
-window.handleProductSubmit = (e, id) => {
+window.handleProductSubmit = async (e, id) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    
+    // Determine Image Source (Upload vs URL)
+    let finalImage = currentImageBase64;
+    const urlInput = formData.get('imageUrl');
+    if (urlInput && urlInput.trim() !== '') {
+        finalImage = urlInput;
+    }
+    // Fallback if nothing
+    if (!finalImage) finalImage = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
+
     const newProduct = {
         id: id || 'prod-' + Date.now(),
         name: formData.get('name'),
         slug: formData.get('name').toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
-        image: formData.get('image'),
+        image: finalImage,
         description: formData.get('description'),
         category: formData.get('category'),
         price: Number(formData.get('price')),
@@ -1299,32 +874,36 @@ window.handleProductSubmit = (e, id) => {
         unit: formData.get('unit'),
         isOrganic: formData.get('isOrganic') === 'on',
         isOnSale: formData.get('isOnSale') === 'on',
-        rating: 0 // New products start with 0 rating
+        rating: id ? (products.find(p => p.id === id)?.rating || 0) : 0
     };
 
     if(id) {
         // Edit
         const idx = products.findIndex(p => p.id === id);
         if(idx !== -1) {
-            products[idx] = { ...products[idx], ...newProduct, rating: products[idx].rating };
+            products[idx] = { ...products[idx], ...newProduct };
         }
     } else {
         // Create
         products.push(newProduct);
     }
     
-    saveProducts();
+    await saveProducts();
     document.getElementById('modal-container').innerHTML = '';
     renderAdminProducts();
 }
 
 
 // --- MAIN ENTRY ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     renderHeader();
     renderFooter();
     
+    // IMPORTANT: Wait for data to load before checking routes
+    await fetchData();
+
     const path = window.location.pathname;
+    // Simple routing check based on filename
     if (path.includes('shop.html')) initShop();
     else if (path.includes('product.html')) initProduct();
     else if (path.includes('checkout.html')) initCheckout();
@@ -1337,17 +916,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
-                const role = document.getElementById('role').value;
 
-                if (role === 'admin') {
-                    if (email === 'stm@gmail.com' && password === 'awaisali') {
-                        login(email, role);
-                    } else {
-                        alert('Invalid Admin Credentials!');
-                    }
+                if (email === 'ssm@gmail.com' && password === 'awaisali') {
+                    login(email);
                 } else {
-                    // Customers can login freely for demo
-                    login(email, role);
+                    alert('Invalid Admin Credentials!');
                 }
             };
         }
@@ -1361,7 +934,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
       .then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        console.log('ServiceWorker registration successful');
       })
       .catch(err => {
         console.log('ServiceWorker registration failed: ', err);
