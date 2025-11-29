@@ -1,5 +1,5 @@
 {
-  "name": "freshmarket-shabqadar",
+  "name": "student-super-mart",
   "version": "1.0.0",
   "description": "Local grocery delivery website for Shabqadar",
   "main": "server.js",
@@ -18,6 +18,6 @@
     "ecommerce",
     "shabqadar"
   ],
-  "author": "FreshMarket",
+  "author": "Student Super Mart",
   "license": "ISC"
 }

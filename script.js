@@ -674,6 +674,7 @@ let orders = JSON.parse(localStorage.getItem('orders')) || [
     items: [products[0], products[2]],
     total: 1450,
     status: 'delivered',
+    paymentMethod: 'Cash on Delivery',
     date: new Date().toISOString()
   }
 ];
@@ -812,7 +813,7 @@ function renderHeader() {
         <div class="flex items-center justify-between h-16">
           <a href="index.html" class="flex items-center gap-2 text-2xl font-bold text-emerald-600">
             <i class="fa-solid fa-leaf"></i>
-            <span>FreshMarket</span>
+            <span>Student Super Mart</span>
           </a>
           <nav class="hidden md:flex items-center space-x-8">
             <a href="shop.html" class="text-sm font-medium text-gray-600 hover:text-emerald-600">Shop</a>
@@ -859,7 +860,7 @@ function renderFooter() {
           <div>
             <div class="flex items-center gap-2 text-2xl font-bold text-white mb-4">
               <i class="fa-solid fa-leaf text-emerald-500"></i>
-              <span>FreshMarket</span>
+              <span>Student Super Mart</span>
             </div>
             <p class="text-sm text-gray-400">Fresh groceries delivered to your doorstep in Shabqadar, Charsadda & Peshawar.</p>
           </div>
@@ -1043,6 +1044,7 @@ function initCheckout() {
         form.onsubmit = (e) => {
             e.preventDefault();
             const formData = new FormData(form);
+            const paymentMethod = formData.get('paymentMethod');
             const newOrder = {
                 id: 'ord-' + Math.floor(Math.random() * 10000),
                 customerName: formData.get('firstName') + ' ' + formData.get('lastName'),
@@ -1050,6 +1052,7 @@ function initCheckout() {
                 items: [...cart],
                 total: total,
                 status: 'pending',
+                paymentMethod: paymentMethod,
                 date: new Date().toISOString()
             };
             orders.unshift(newOrder);
@@ -1113,6 +1116,7 @@ function renderAdminOrders() {
                         <th class="p-4">Order ID</th>
                         <th class="p-4">Customer</th>
                         <th class="p-4">Total</th>
+                        <th class="p-4">Payment</th>
                         <th class="p-4">Date</th>
                         <th class="p-4">Status</th>
                         <th class="p-4">Action</th>
@@ -1127,6 +1131,7 @@ function renderAdminOrders() {
                                 <div class="text-xs text-gray-500">${order.email}</div>
                             </td>
                             <td class="p-4 font-bold text-gray-900">${formatPrice(order.total)}</td>
+                            <td class="p-4 text-sm text-gray-600">${order.paymentMethod || 'COD'}</td>
                             <td class="p-4 text-sm text-gray-600">${new Date(order.date).toLocaleDateString()}</td>
                             <td class="p-4">
                                 <span class="px-2 py-1 rounded-full text-xs font-bold uppercase
@@ -1330,7 +1335,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if(loginForm) {
             loginForm.onsubmit = (e) => {
                 e.preventDefault();
-                login(document.getElementById('email').value, document.getElementById('role').value);
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const role = document.getElementById('role').value;
+
+                if (role === 'admin') {
+                    if (email === 'stm@gmail.com' && password === 'awaisali') {
+                        login(email, role);
+                    } else {
+                        alert('Invalid Admin Credentials!');
+                    }
+                } else {
+                    // Customers can login freely for demo
+                    login(email, role);
+                }
             };
         }
     } else {

@@ -1,6 +1,6 @@
 {
-  "name": "FreshMarket Shabqadar",
-  "short_name": "FreshMarket",
+  "name": "Student Super Mart",
+  "short_name": "Student Mart",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
