@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout | FreshMarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased flex flex-col min-h-screen">
+    <div id="header-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <form id="checkout-form" class="space-y-8">
+                <section>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Shipping Information</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input required name="firstName" placeholder="First Name" class="border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input required name="lastName" placeholder="Last Name" class="border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input required name="email" type="email" placeholder="Email Address" class="col-span-2 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input required name="address" placeholder="Street Address" class="col-span-2 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input required name="city" placeholder="City" class="border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <input required name="zip" placeholder="Zip Code" class="border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </section>
+                <section>
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 text-emerald-800 text-sm">
+                        <i class="fa-solid fa-info-circle mr-2"></i> Cash on Delivery available.
+                    </div>
+                </section>
+                <button id="chk-btn" type="submit" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg">Place Order</button>
+            </form>
+
+            <div class="bg-gray-50 p-8 rounded-2xl h-fit border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
+                <div id="order-summary" class="space-y-4 max-h-96 overflow-y-auto pr-2"></div>
+                <div class="border-t border-gray-200 mt-6 pt-6 space-y-3 text-gray-600">
+                    <div class="flex justify-between"><span>Subtotal</span><span id="chk-subtotal"></span></div>
+                    <div class="flex justify-between"><span>Shipping</span><span id="chk-shipping"></span></div>
+                    <div class="flex justify-between font-bold text-xl text-gray-900 pt-3 border-t border-gray-200"><span>Total</span><span id="chk-total"></span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
