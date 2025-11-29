@@ -1,4 +1,5 @@
 
+
 // --- DATA & CONSTANTS ---
 const TAX_RATE = 0.00;
 const FREE_SHIPPING_THRESHOLD = 5000;
@@ -10,13 +11,15 @@ let categories = [];
 let orders = [];
 let settings = {
     jazzCashNumber: '0300-1234567',
-    easyPaisaNumber: '0345-1234567'
+    easyPaisaNumber: '0345-1234567',
+    whatsAppNumber: '923001234567'
 };
 
 // Local containers
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-// We only check for admin session locally, data is on server
-const isAdmin = sessionStorage.getItem('adminAuth') === 'true';
+// Auth check (Checks for token existence, real validation happens on server API calls)
+const getAuthToken = () => sessionStorage.getItem('adminToken');
+const isAdmin = () => !!getAuthToken();
 
 // --- API FUNCTIONS ---
 async function fetchData() {
@@ -41,11 +44,26 @@ async function fetchData() {
 
 async function syncData(type, data) {
     try {
+        const headers = { 'Content-Type': 'application/json' };
+        
+        // Attach token if available (required for products/settings updates)
+        const token = getAuthToken();
+        if (token) {
+            headers['Authorization'] = token;
+        }
+
         const res = await fetch('/api/update', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify({ type, data })
         });
+        
+        if (res.status === 401) {
+            alert('Session expired. Please login again.');
+            adminLogout();
+            return false;
+        }
+
         if (!res.ok) throw new Error('Server error');
         return true;
     } catch (e) {
@@ -91,6 +109,7 @@ document.addEventListener('DOMContentLoaded', fetchData);
 function initApp() {
     renderHeader();
     renderFooter();
+    renderFloatingButtons(); // WhatsApp
     
     const path = window.location.pathname;
     if (path.includes('index.html') || path === '/') initHome();
@@ -98,12 +117,7 @@ function initApp() {
     else if (path.includes('product.html')) initProduct();
     else if (path.includes('checkout.html')) initCheckout();
     else if (path.includes('admin.html')) initAdmin();
-    else if (path.includes('success.html')) {
-        // Clear cart on success
-        cart = [];
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-    }
+    else if (path.includes('success.html')) initSuccess();
 }
 
 // --- COMPONENTS ---
@@ -197,7 +211,7 @@ function renderFooter() {
                     <div>
                         <h4 class="font-bold text-gray-800 mb-4">Contact</h4>
                         <ul class="space-y-2 text-sm text-gray-500">
-                            <li><i class="fa-solid fa-phone mr-2 text-emerald-600"></i> <span id="footer-contact-num">0300-1234567</span></li>
+                            <li><i class="fa-solid fa-phone mr-2 text-emerald-600"></i> <span id="footer-contact-num">${settings.whatsAppNumber ? settings.whatsAppNumber.replace('92', '0') : '0300-1234567'}</span></li>
                             <li><i class="fa-solid fa-envelope mr-2 text-emerald-600"></i> info@studentsupermart.com</li>
                         </ul>
                     </div>
@@ -209,6 +223,22 @@ function renderFooter() {
             </div>
         </footer>`;
     }
+}
+
+function renderFloatingButtons() {
+    // Check if exists, if so update link (simple way is to remove and re-add or just check)
+    const existing = document.getElementById('whatsapp-float');
+    if (existing) existing.parentElement.remove();
+
+    const waNumber = settings.whatsAppNumber || '923001234567';
+
+    const div = document.createElement('div');
+    div.innerHTML = `
+        <a href="https://wa.me/${waNumber}" target="_blank" id="whatsapp-float" class="fixed bottom-6 right-6 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 hover:-translate-y-1 transition-all z-40 cursor-pointer">
+            <i class="fa-brands fa-whatsapp text-3xl"></i>
+        </a>
+    `;
+    document.body.appendChild(div.firstElementChild);
 }
 
 // --- CART LOGIC ---
@@ -497,6 +527,13 @@ function initCheckout() {
         const success = await syncData('orders', orders);
         
         if (success) {
+            // Save last order to localStorage for Success Page
+            localStorage.setItem('lastOrder', JSON.stringify(order));
+            
+            // Clear cart
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
             window.location.href = 'success.html';
         } else {
             btn.textContent = 'Place Order';
@@ -505,26 +542,86 @@ function initCheckout() {
     });
 }
 
-// 5. ADMIN
+// 5. SUCCESS
+function initSuccess() {
+    // Clear cart on success if not already done in checkout
+    cart = [];
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+
+    // Prepare WhatsApp Link
+    const orderStr = localStorage.getItem('lastOrder');
+    const waBtn = document.getElementById('btn-wa-order');
+    
+    if (orderStr && waBtn) {
+        const order = JSON.parse(orderStr);
+        const waNumber = settings.whatsAppNumber || '923001234567';
+        
+        // Format Message
+        let msg = `*New Order: #${order.id.slice(-6)}*\n`;
+        msg += `Name: ${order.customer.firstName} ${order.customer.lastName}\n`;
+        msg += `Address: ${order.customer.address}, ${order.customer.city}\n`;
+        msg += `Phone: ${order.customer.email}\n\n`; // Assuming email field is used for phone in local context or add phone field
+        msg += `*Items:*\n`;
+        order.items.forEach(i => {
+            msg += `- ${i.qty}x ${i.name} (Rs.${i.price * i.qty})\n`;
+        });
+        msg += `\n*Total: Rs. ${order.total}*\n`;
+        msg += `Payment: ${order.paymentMethod}`;
+        
+        const encodedMsg = encodeURIComponent(msg);
+        waBtn.href = `https://wa.me/${waNumber}?text=${encodedMsg}`;
+        waBtn.classList.remove('hidden');
+    }
+}
+
+function updateCartCount() {
+    renderHeader();
+}
+
+// 6. ADMIN
 function initAdmin() {
     // Auth Check
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            if (email === 'ssm@gmail.com' && pass === 'awaisali') {
-                sessionStorage.setItem('adminAuth', 'true');
-                window.location.href = 'admin.html';
-            } else {
-                alert('Invalid Credentials');
+            const password = document.getElementById('password').value;
+            const btn = loginForm.querySelector('button');
+            const originalText = btn.textContent;
+            
+            btn.textContent = "Verifying...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success && data.token) {
+                    sessionStorage.setItem('adminToken', data.token);
+                    window.location.href = 'admin.html';
+                } else {
+                    alert('Invalid Credentials');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            } catch(err) {
+                console.error(err);
+                alert('Connection Error');
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
         });
         return;
     }
 
-    if (!isAdmin) {
+    if (!isAdmin()) {
         window.location.href = 'login.html';
         return;
     }
@@ -542,8 +639,22 @@ function initAdmin() {
                 <button onclick="adminLogout()" class="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 mt-8">Logout</button>
             </nav>
         </aside>
-        <div id="admin-content" class="flex-1 bg-white rounded-xl shadow-sm p-6 min-h-[500px]">
-            <!-- Dynamic Content -->
+        <div id="admin-content" class="flex-1 space-y-6">
+             <!-- Dashboard Stats -->
+             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="text-gray-500 text-sm font-bold uppercase mb-1">Total Revenue</div>
+                    <div class="text-3xl font-bold text-gray-900">Rs. ${orders.reduce((acc, o) => acc + o.total, 0).toLocaleString()}</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="text-gray-500 text-sm font-bold uppercase mb-1">Total Orders</div>
+                    <div class="text-3xl font-bold text-gray-900">${orders.length}</div>
+                </div>
+             </div>
+             
+             <div id="admin-sub-content" class="bg-white rounded-xl shadow-sm p-6 min-h-[400px]">
+                <!-- Dynamic Content -->
+             </div>
         </div>
     </div>`;
     
@@ -557,7 +668,7 @@ function renderAdminSection(section) {
     });
     document.getElementById(`nav-${section}`).className = 'w-full text-left px-4 py-2 rounded-lg text-emerald-600 bg-emerald-50 font-medium';
 
-    const content = document.getElementById('admin-content');
+    const content = document.getElementById('admin-sub-content');
     
     if (section === 'orders') {
         content.innerHTML = `
@@ -575,7 +686,7 @@ function renderAdminSection(section) {
                         </tr>
                     </thead>
                     <tbody class="text-sm">
-                        ${orders.length ? orders.map(o => `
+                        ${orders.length ? orders.slice().reverse().map(o => `
                             <tr class="border-b border-gray-50 hover:bg-gray-50">
                                 <td class="py-3 font-medium">#${o.id.slice(-6)}</td>
                                 <td class="py-3">${o.customer.firstName} ${o.customer.lastName}</td>
@@ -638,6 +749,11 @@ function renderAdminSection(section) {
                     <label class="block text-sm font-bold text-gray-700 mb-2">EasyPaisa Number</label>
                     <input id="set-ep" value="${settings.easyPaisaNumber || ''}" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="03XX-XXXXXXX">
                 </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">WhatsApp Number</label>
+                    <p class="text-xs text-gray-400 mb-1">Format: 923001234567 (No '+' or dashes)</p>
+                    <input id="set-wa" value="${settings.whatsAppNumber || ''}" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="923001234567">
+                </div>
                 <button type="submit" id="btn-save-settings" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 transition-colors">Save Settings</button>
             </form>
         `;
@@ -650,13 +766,16 @@ function renderAdminSection(section) {
 
             settings.jazzCashNumber = document.getElementById('set-jc').value;
             settings.easyPaisaNumber = document.getElementById('set-ep').value;
+            settings.whatsAppNumber = document.getElementById('set-wa').value;
 
             const success = await syncData('settings', settings);
             if (success) {
-                alert('Settings Saved Successfully!');
+                alert('Settings Saved Successfully! Page will refresh to update WhatsApp button.');
+                window.location.reload();
+            } else {
+                btn.textContent = 'Save Settings';
+                btn.disabled = false;
             }
-            btn.textContent = 'Save Settings';
-            btn.disabled = false;
         });
     }
 }
@@ -666,7 +785,7 @@ let uploadedImageBase64 = '';
 
 function showProductForm() {
     uploadedImageBase64 = ''; // Reset
-    const content = document.getElementById('admin-content');
+    const content = document.getElementById('admin-sub-content');
     content.innerHTML = `
         <h3 class="text-xl font-bold mb-6">Add New Product</h3>
         <form id="add-product-form" class="space-y-4 max-w-lg">
@@ -788,6 +907,6 @@ async function deleteCategory(cat) {
 }
 
 function adminLogout() {
-    sessionStorage.removeItem('adminAuth');
+    sessionStorage.removeItem('adminToken');
     window.location.href = 'index.html';
 }

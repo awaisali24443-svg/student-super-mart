@@ -83,6 +83,7 @@
   "orders": [],
   "settings": {
     "jazzCashNumber": "0300-1234567",
-    "easyPaisaNumber": "0345-1234567"
+    "easyPaisaNumber": "0345-1234567",
+    "whatsAppNumber": "923001234567"
   }
 }
